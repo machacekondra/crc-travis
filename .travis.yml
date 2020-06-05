@@ -1,14 +1,22 @@
 dist: xenial
 
+language: go
+
+go:
+  - 1.x
+
+
 install:
-  - apt install virt-manager
+  - sudo apt-get install -y virt-manager
   - wget https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz
   - tar -xvJf crc-linux-amd64.tar.xz
   - mv crc-linux-1.11.0-amd64/crc $HOME/bin
+  - "echo \"{'auths': {'quay.io': {'auth': ''}}}\" > auths"
+  - sudo addgroup wheel
 
 script:
   - crc setup
   - systemctl disable systemd-resolved.service
   - rm /etc/resolv.conf
   - systemctl restart NetworkManager
-  - crc start
+  - crc start -p auths
